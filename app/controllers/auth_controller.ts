@@ -184,7 +184,7 @@ export default class AuthController {
             </ul>
             <p>Get started now and discover a smarter way to manage your money!</p>
             <p>Best regards,<br/>
-              The [App Name] Team
+              The Zippa Wallet Team
               </p>
             `)
       })
