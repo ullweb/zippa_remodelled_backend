@@ -1,7 +1,6 @@
 import vine from '@vinejs/vine'
 const password = vine.string().minLength(8)
 const email = vine.string().email().normalizeEmail()
-const confirm = vine.string().confirmed({ confirmationField: 'password' })
 export const registerValidator = vine.compile(
   vine.object({
     email: vine

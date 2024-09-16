@@ -12,9 +12,7 @@ import moment from 'moment'
 import { generate } from 'randomstring'
 import Wallet from '#models/wallet'
 import Transaction from '#models/transaction'
-import Card from '#models/card'
 import got from 'got'
-import { AirtimeApis } from '@obipascal/vtpass-nodejs-sdk'
 import Bill from '#models/bill'
 import mail from '@adonisjs/mail/services/main'
 
@@ -45,7 +43,7 @@ export default class BillsController {
       return { success: false, message: 'user not authenticated' }
     }
     const { id } = user
-    const { amount, phone, method, network } = await request.validateUsing(airtimeValidator)
+    const { amount, phone, network } = await request.validateUsing(airtimeValidator)
 
     const request_id = this.generateRequestId()
 
@@ -153,7 +151,7 @@ export default class BillsController {
       return { success: false, message: 'user not authenticated' }
     }
     const { id } = user
-    const { phone, amount, billersCode, serviceID, variation_code, method } =
+    const { phone, amount, billersCode, serviceID, variation_code } =
       await request.validateUsing(dataValidator)
 
     const request_id = this.generateRequestId()
@@ -259,7 +257,7 @@ export default class BillsController {
       return { success: false, message: 'user not authenticated' }
     }
     const { id, email } = user
-    const { serviceID, billersCode, variation_code, amount, phone, method } =
+    const { serviceID, billersCode, variation_code, amount, phone } =
       await request.validateUsing(dataValidator)
     const request_id = this.generateRequestId()
 
@@ -371,7 +369,7 @@ export default class BillsController {
       return { success: false, message: 'user not authenticated' }
     }
     const { id } = user
-    const { serviceID, billersCode, variation_code, amount, phone, method, change } =
+    const { serviceID, billersCode, variation_code, amount, phone, change } =
       await request.validateUsing(cableValidator)
     const request_id = this.generateRequestId()
 

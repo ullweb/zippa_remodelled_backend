@@ -9,7 +9,7 @@ import { StatusCodes } from 'http-status-codes'
 import { Paystack } from 'paystack-sdk'
 
 export default class DepositsController {
-  async getWallet({ auth, request, response }: HttpContext) {
+  async getWallet({ auth, response }: HttpContext) {
     await auth.check()
     const user = auth.user
     if (!user) {
@@ -21,7 +21,7 @@ export default class DepositsController {
     return { success: true, wallet: balance }
   }
 
-  async getAllWalletsTotal({ auth, request, response }: HttpContext) {
+  async getAllWalletsTotal({ auth, response }: HttpContext) {
     await auth.check()
     const user = auth.user
     if (!user) {
@@ -43,7 +43,7 @@ export default class DepositsController {
       response.safeStatus(419)
       return { success: false, message: 'user not authenticated' }
     }
-    const { id, name } = user
+    const { id } = user
     const { amount, ref } = await request.validateUsing(initiateValidator)
 
     await Deposit.create({ amount, referenceId: ref, userId: id, status: 'pending' })
@@ -64,7 +64,7 @@ export default class DepositsController {
       response.safeStatus(419)
       return { success: false, message: 'user not authenticated' }
     }
-    const { id: userId, name } = user
+    const { id: userId } = user
     // const { id, name } = req.user;
     const { id: reference } = await request.validateUsing(verifyValidator)
     const saveCard = request.input('saveCard')
@@ -75,8 +75,10 @@ export default class DepositsController {
       const paystackResponse = await paystack.transaction.verify(`${reference}`)
       const { data, message, status } = paystackResponse
       if (data && data.amount === trans?.amount && status) {
-        await Deposit.query().where({ referenceId: reference }).update({ status: data.status })
-        const balance = await Wallet.query()
+        await Deposit.query()
+          .where({ referenceId: reference })
+          .update({ status: data.status })
+          // const balance = await Wallet.query()
           .where({ userId: userId })
           .increment({ walletBalance: data.amount })
         await Transaction.create({

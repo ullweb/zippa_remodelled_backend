@@ -227,7 +227,7 @@ export default class AuthController {
       response.safeStatus(419)
       return { success: false, message: 'user not authenticated' }
     }
-    const { id, email } = user
+    const { id } = user
     const { bvn } = await request.validateUsing(bvnValidator)
 
     // const user = await User.findOne({ email })
