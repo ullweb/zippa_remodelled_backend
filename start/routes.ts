@@ -24,6 +24,8 @@ router
 router
   .post('/auth/confirm-verification', [AuthController, 'confirmVerification'])
   .as('auth.confirm-code')
+router.post('/logout', [AuthController, 'logout'])
+router.post('/auth/verify-bvn', [AuthController, 'verifyBVN'])
 
 router.post('/bills/airtime', [BillsController, 'buyAirtime']).as('bills.airtime')
 router.post('/bills/data', [BillsController, 'buyData']).as('bills.data')
