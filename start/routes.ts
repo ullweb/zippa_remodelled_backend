@@ -9,6 +9,7 @@
 
 const AuthController = () => import('#controllers/auth_controller')
 const BillsController = () => import('#controllers/bills_controller')
+const HomeController = () => import('#controllers/home_controller')
 import router from '@adonisjs/core/services/router'
 
 router.get('/', async () => {
@@ -32,6 +33,8 @@ router
     router.post('/auth/create-pin', [AuthController, 'createPin']).as('auth.create.pin')
     router.post('/auth/verify-pin', [AuthController, 'verifyPin']).as('auth.verify.pin')
     router.post('/auth/update-pin', [AuthController, 'updatePin']).as('auth.update.pin')
+
+    router.get('/home', [HomeController, 'index']).as('home.index')
 
     router.post('/bills/airtime', [BillsController, 'buyAirtime']).as('bills.airtime')
     router.post('/bills/data', [BillsController, 'buyData']).as('bills.data')
