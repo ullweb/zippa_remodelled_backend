@@ -131,9 +131,11 @@ export default class AuthController {
 
     const { email } = await request.validateUsing(emailValidator)
     const verificationCode = Math.floor(1000 + Math.random() * 9000)
-    const user = await User.query().where('email', email).update({ verificationCode }).first()
-    console.log(user, email)
+    const user = await User.query().where('email', email).first()
     if (user) {
+      // console.log(user, email)
+      user.verificationCode = verificationCode
+      await user.save()
       await mail
         .send((message) => {
           message.to(user.email).subject('Zippa Verification Code').html(`
@@ -143,6 +145,7 @@ export default class AuthController {
         })
         .catch((err) => {
           logger.error({ err: err }, 'Something went wrong')
+          response.safeStatus(500)
           return {
             success: false,
             message: err,
