@@ -1,4 +1,3 @@
-import db from '@adonisjs/lucid/services/db'
 import vine from '@vinejs/vine'
 const password = vine.string().minLength(8)
 const email = vine.string().email().normalizeEmail()
@@ -13,12 +12,18 @@ export const registerValidator = vine.compile(
         return !!match
       }),
     name: vine.string(),
-    phone: vine.string().minLength(11),
-    password,
-    username: vine.string().unique(async(db, value) => {
-      const match = await db.from('users').select('id').where('username', value)
+    phone: vine
+      .string()
+      .minLength(11)
+      .unique(async (db, value) => {
+        const match = await db.from('users').select('id').where('phone', value)
         return !!match
-    })
+      }),
+    password,
+    username: vine.string().unique(async (db, value) => {
+      const match = await db.from('users').select('id').where('username', value)
+      return !!match
+    }),
     // confirm,
   })
 )
