@@ -34,6 +34,28 @@ export default class BillsController {
     const randomPart = generate(6)
     return datePart + randomPart
   }
+  async getTransactions({ auth, response, request }: HttpContext) {
+    logger.info('buy airtime route')
+    await auth.check()
+    const user = auth.user
+    if (!user) {
+      response.safeStatus(419)
+      return { success: false, message: 'user not authenticated' }
+    }
+    const transactions = await Transaction.query()
+      .where({
+        userId: user.id,
+        type: 'debit',
+        status: 'success',
+      })
+      .orderBy('created_at', 'desc')
+      .limit(5)
+
+    return {
+      success: true,
+      transactions,
+    }
+  }
   async buyAirtime({ auth, request, response }: HttpContext) {
     logger.info('buy airtime route')
     await auth.check()
@@ -62,6 +84,7 @@ export default class BillsController {
           type: 'debit',
           status: 'failed',
         })
+        console.log(balance)
         response.safeStatus(400)
         return {
           success: false,

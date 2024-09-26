@@ -15,7 +15,7 @@ export default class extends BaseSchema {
         .onDelete('CASCADE')
 
       table.integer('wallet_balance')
-      table.integer('wallet_number')
+      table.string('wallet_number', 10)
 
       table.timestamp('created_at')
       table.timestamp('updated_at')

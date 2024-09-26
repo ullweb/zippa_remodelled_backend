@@ -20,6 +20,9 @@ export default class Transaction extends BaseModel {
   declare title: string
 
   @column()
+  declare purpose: string
+
+  @column()
   declare type: 'debit' | 'credit'
 
   @column()

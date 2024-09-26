@@ -44,3 +44,23 @@ export const bvnValidator = vine.compile(
     bvn: vine.number(),
   })
 )
+
+export const updatePinValidator = vine.compile(
+  vine.object({
+    oldPin: vine.string(),
+    newPin: vine.string(),
+  })
+)
+export const accountValidator = vine.compile(
+  vine.object({
+    email: vine
+      .string()
+      .email()
+      .optional()
+      .requiredIfMissing(['username', 'dob', 'address', 'phone']),
+    username: vine.string().optional().requiredIfMissing(['email', 'dob', 'address', 'phone']),
+    dob: vine.string().optional().requiredIfMissing(['username', 'email', 'address', 'phone']),
+    address: vine.string().optional().requiredIfMissing(['username', 'dob', 'email', 'phone']),
+    phone: vine.string().optional().requiredIfMissing(['username', 'dob', 'address', 'email']),
+  })
+)

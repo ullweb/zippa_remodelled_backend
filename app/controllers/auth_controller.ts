@@ -3,10 +3,12 @@ import User from '#models/user'
 import { HttpContext } from '@adonisjs/core/http'
 import Case from 'case'
 import {
+  accountValidator,
   bvnValidator,
   emailValidator,
   loginValidator,
   registerValidator,
+  updatePinValidator,
   verifyValidator,
 } from '#validators/auth'
 import mail from '@adonisjs/mail/services/main'
@@ -14,6 +16,7 @@ import Wallet from '#models/wallet'
 import limiter from '@adonisjs/limiter/services/main'
 import axios from 'axios'
 import { StatusCodes } from 'http-status-codes'
+import hash from '@adonisjs/core/services/hash'
 
 export default class AuthController {
   async register({ request }: HttpContext) {
@@ -166,8 +169,12 @@ export default class AuthController {
         }
       }
       user.verified = true
-      user.save()
-      const wallet = await Wallet.create({ walletBalance: 0, userId: user.id })
+      await user.save()
+      const wallet = await Wallet.create({
+        walletBalance: 0,
+        userId: user.id,
+        walletNumber: user.phone.slice(1, 11),
+      })
 
       const token = await User.accessTokens.create(user, ['*'], {
         expiresIn: '7 days',
@@ -203,6 +210,197 @@ export default class AuthController {
       message: 'User not found',
     }
   }
+  async editAccount({ auth, response, request }: HttpContext) {
+    logger.info('this is update account detail route')
+    await auth.check()
+    const user = auth.user
+
+    if (!user) {
+      logger.error({ err: 'no user found' }, 'Something went wrong')
+      return {
+        success: false,
+        message: 'no user found',
+      }
+    }
+
+    let field = request.input('field')
+    switch (field) {
+      case 'email':
+        const { email } = await request.validateUsing(accountValidator)
+        const isEmailAvailable = await User.query()
+          .select('id')
+          .where({ email })
+          .whereNot('id', user.id)
+          .first()
+        if (isEmailAvailable) {
+          return response.safeStatus(422).json({
+            success: false,
+            errors: [
+              {
+                message: 'This Email has been used by someone else',
+                field: 'email',
+              },
+            ],
+          })
+        }
+        user.email = email ?? ''
+        break
+      case 'phone':
+        const { phone } = await request.validateUsing(accountValidator)
+        const isAvailable = await User.query()
+          .select('id')
+          .where({ phone })
+          .whereNot('id', user.id)
+          .first()
+        if (isAvailable) {
+          return response.safeStatus(422).json({
+            success: false,
+            errors: [
+              {
+                message: 'This Phone Number has been used by someone else',
+                field: 'phone',
+              },
+            ],
+          })
+        }
+        user.phone = phone ?? ''
+        break
+      case 'dob':
+        const { dob } = await request.validateUsing(accountValidator)
+        user.dob = dob ?? ''
+        break
+      case 'address':
+        const { address } = await request.validateUsing(accountValidator)
+        user.address = address ?? ''
+        break
+      case 'username':
+        const { username } = await request.validateUsing(accountValidator)
+        const isUsernameAvailable = await User.query()
+          .select('id')
+          .where({ username })
+          .whereNot('id', user.id)
+          .first()
+        if (isUsernameAvailable) {
+          return response.safeStatus(422).json({
+            success: false,
+            errors: [
+              {
+                message: 'This Username has been used by someone else',
+                field: 'username',
+              },
+            ],
+          })
+        }
+        user.username = username ?? ''
+        break
+
+      default:
+        break
+    }
+    await user.save()
+
+    return {
+      success: true,
+      message: 'User Details Updated Successfully',
+      user,
+    }
+  }
+
+  async createPin({ auth, request }: HttpContext) {
+    logger.info('this is create pin route')
+    await auth.check()
+    const user = auth.user
+
+    if (!user) {
+      logger.error({ err: 'no user found' }, 'Something went wrong')
+      return {
+        success: false,
+        message: 'no user found',
+      }
+    }
+
+    const pin = request.input('pin')
+    const hashedPin = await hash.make(pin)
+    user.pin = hashedPin
+    await user.save()
+
+    return {
+      success: true,
+      message: 'Pin has been created successfully',
+    }
+  }
+
+  async verifyPin({ auth, response, request }: HttpContext) {
+    logger.info('this is verify pin route')
+    await auth.check()
+    const user = auth.user
+
+    if (!user) {
+      logger.error({ err: 'no user found' }, 'Something went wrong')
+      return {
+        success: false,
+        message: 'no user found',
+      }
+    }
+    if (user.pin) {
+      const pin = request.input('pin')
+      const isPinCorrect = await hash.verify(user.pin, pin)
+      if (isPinCorrect) {
+        return {
+          success: true,
+          message: 'PIN Verified',
+        }
+      } else {
+        response.safeStatus(400).json({
+          success: false,
+          message: 'Invalid PIN',
+        })
+      }
+    } else {
+      response.safeStatus(400).json({
+        success: false,
+        message: 'PIN not set',
+      })
+    }
+  }
+
+  async updatePin({ auth, response, request }: HttpContext) {
+    logger.info('this is verify pin route')
+    await auth.check()
+    const user = auth.user
+
+    if (!user) {
+      logger.error({ err: 'no user found' }, 'Something went wrong')
+      return {
+        success: false,
+        message: 'no user found',
+      }
+    }
+
+    const { oldPin, newPin } = await request.validateUsing(updatePinValidator)
+    if (user.pin) {
+      const isPinValid = await hash.verify(user.pin, oldPin)
+      if (isPinValid) {
+        user.pin = await hash.make(newPin)
+        await user.save()
+        return {
+          success: true,
+          message: 'PIN Updated',
+        }
+      } else {
+        response.safeStatus(400).json({
+          success: false,
+          message: 'Invalid PIN',
+        })
+      }
+    } else {
+      response.safeStatus(400).json({
+        success: false,
+        message: 'PIN not set',
+      })
+    }
+  }
+
   async logout({ auth }: HttpContext) {
     logger.info('this is logout route')
     await auth.check()

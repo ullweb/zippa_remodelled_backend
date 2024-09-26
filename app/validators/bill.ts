@@ -1,19 +1,19 @@
 import vine from '@vinejs/vine'
 export const airtimeValidator = vine.compile(
   vine.object({
-    amount: vine.number(),
+    amount: vine.number().min(50),
     phone: vine.string().minLength(11),
-    method: vine.string(),
-    id: vine.number(),
-    email: vine.string().email().normalizeEmail(),
-    name: vine.string(),
+    // method: vine.string(),
+    // id: vine.number(),
+    // email: vine.string().email().normalizeEmail(),
+    // name: vine.string(),
     network: vine.string(),
   })
 )
 
 export const dataValidator = vine.compile(
   vine.object({
-    amount: vine.number(),
+    amount: vine.number().min(50),
     phone: vine.string().minLength(11),
     method: vine.string(),
     id: vine.number(),
@@ -34,7 +34,7 @@ export const customerValidator = vine.compile(
 
 export const cableValidator = vine.compile(
   vine.object({
-    amount: vine.number(),
+    amount: vine.number().min(50),
     phone: vine.string().minLength(11),
     method: vine.string(),
     id: vine.number(),
