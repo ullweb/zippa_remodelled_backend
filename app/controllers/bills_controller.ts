@@ -34,7 +34,7 @@ export default class BillsController {
     const randomPart = generate(6)
     return datePart + randomPart
   }
-  async getTransactions({ auth, response, request }: HttpContext) {
+  async getTransactions({ auth, response }: HttpContext) {
     logger.info('buy airtime route')
     await auth.check()
     const user = auth.user
