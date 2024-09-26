@@ -132,6 +132,7 @@ export default class AuthController {
     const { email } = await request.validateUsing(emailValidator)
     const verificationCode = Math.floor(1000 + Math.random() * 9000)
     const user = await User.query().where('email', email).update({ verificationCode }).first()
+    console.log(user, email)
     if (user) {
       await mail
         .send((message) => {
