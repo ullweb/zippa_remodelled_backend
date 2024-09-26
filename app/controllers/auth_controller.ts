@@ -30,7 +30,7 @@ export default class AuthController {
       email: data.email,
       phone: data.phone,
       password: data.password,
-      username: data.email.split('@')[0],
+      username: data.username,
       image:
         'https://res.cloudinary.com/dlupy45xp/image/upload/v1721831826/zippa/wubkucrhehiuvjaa7es5.png',
     })
@@ -126,26 +126,34 @@ export default class AuthController {
     }
   }
 
-  async resendVerificationCode({ request }: HttpContext) {
+  async resendVerificationCode({ request, response }: HttpContext) {
     logger.info('verification code resend route')
 
     const { email } = await request.validateUsing(emailValidator)
     const verificationCode = Math.floor(1000 + Math.random() * 9000)
     const user = await User.query().where('email', email).update({ verificationCode }).first()
-    await mail
-      .send((message) => {
-        message.to(user.email).subject('Zippa Verification Code').html(`
+    if (user) {
+      await mail
+        .send((message) => {
+          message.to(user.email).subject('Zippa Verification Code').html(`
           Hello ${user.name},<p> Your verification code.</p>
         <span style="font-size:32;font-weight:bold; text-align:center;width:100%">${verificationCode}</span>
           `)
-      })
-      .catch((err) => {
-        logger.error({ err: err }, 'Something went wrong')
-        return {
-          success: false,
-          message: err,
-        }
-      })
+        })
+        .catch((err) => {
+          logger.error({ err: err }, 'Something went wrong')
+          return {
+            success: false,
+            message: err,
+          }
+        })
+    } else {
+      response.safeStatus(400)
+      return {
+        success: false,
+        message: 'User not found for ' + email,
+      }
+    }
 
     return {
       success: true,
