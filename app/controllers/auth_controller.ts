@@ -58,7 +58,7 @@ export default class AuthController {
     }
   }
 
-  async login({ request }: HttpContext) {
+  async login({ request, response }: HttpContext) {
     logger.info('this is login route')
 
     const { email, password } = await request.validateUsing(loginValidator)
@@ -92,6 +92,7 @@ export default class AuthController {
      * message about being block for a certain amount of minutes
      */
     if (error) {
+      response.safeStatus(402)
       return {
         success: false,
         message: `Too many login request, try again after ${error.response.availableIn} seconds`,
@@ -109,6 +110,7 @@ export default class AuthController {
           <span style="font-size:32;font-weight:bold; text-align:center;width:100%">${verificationCode}</span>
             `)
         })
+        response.safeStatus(304)
         return {
           success: false,
           message: 'User not verified, verification code sent to email',
@@ -165,7 +167,7 @@ export default class AuthController {
     }
   }
 
-  async confirmVerification({ request }: HttpContext) {
+  async confirmVerification({ request, response }: HttpContext) {
     logger.info('verification code resend route')
 
     const { email, code } = await request.validateUsing(verifyValidator)
@@ -175,6 +177,7 @@ export default class AuthController {
       const dbCode = user?.verificationCode
       if (dbCode !== code) {
         logger.error({ err: 'in valid code' }, 'Something went wrong')
+        response.safeStatus(400)
         return {
           success: false,
           message: 'Invalid code',
@@ -217,6 +220,7 @@ export default class AuthController {
       }
     }
     logger.error({ err: 'no user found' }, 'Something went wrong')
+    response.safeStatus(400)
     return {
       success: false,
       message: 'User not found',
@@ -229,6 +233,7 @@ export default class AuthController {
 
     if (!user) {
       logger.error({ err: 'no user found' }, 'Something went wrong')
+      response.safeStatus(419)
       return {
         success: false,
         message: 'no user found',
@@ -318,13 +323,14 @@ export default class AuthController {
     }
   }
 
-  async createPin({ auth, request }: HttpContext) {
+  async createPin({ auth, request, response }: HttpContext) {
     logger.info('this is create pin route')
     await auth.check()
     const user = auth.user
 
     if (!user) {
       logger.error({ err: 'no user found' }, 'Something went wrong')
+      response.safeStatus(419)
       return {
         success: false,
         message: 'no user found',
@@ -349,6 +355,7 @@ export default class AuthController {
 
     if (!user) {
       logger.error({ err: 'no user found' }, 'Something went wrong')
+      response.safeStatus(419)
       return {
         success: false,
         message: 'no user found',
@@ -383,6 +390,7 @@ export default class AuthController {
 
     if (!user) {
       logger.error({ err: 'no user found' }, 'Something went wrong')
+      response.safeStatus(419)
       return {
         success: false,
         message: 'no user found',
@@ -413,13 +421,14 @@ export default class AuthController {
     }
   }
 
-  async logout({ auth }: HttpContext) {
+  async logout({ auth, response }: HttpContext) {
     logger.info('this is logout route')
     await auth.check()
     const user = auth.user
 
     if (!user) {
       logger.error({ err: 'no user found' }, 'Something went wrong')
+      response.safeStatus(419)
       return {
         success: false,
         message: 'no user found',
