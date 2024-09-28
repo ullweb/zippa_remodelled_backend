@@ -10,7 +10,7 @@ const mailConfig = defineConfig({
    * Email
    */
   from: {
-    address: 'no-reply@zippawallet.com',
+    address: 'noreply@zippawallet.com',
     name: 'Zippa Wallet',
   },
 
