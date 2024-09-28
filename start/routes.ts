@@ -24,7 +24,7 @@ router
     router.post('/auth/login', [AuthController, 'login']).as('auth.login')
     router
       .post('/auth/resend-verification-code', [AuthController, 'resendVerificationCode'])
-      .as('auth.resend-code')
+      .as('auth.resend-verification-code')
     router
       .post('/auth/confirm-verification', [AuthController, 'confirmVerification'])
       .as('auth.confirm-code')
