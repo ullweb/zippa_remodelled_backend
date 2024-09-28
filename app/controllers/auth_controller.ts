@@ -146,7 +146,7 @@ export default class AuthController {
             <b>Dear ${user.name},</b>
             <p>We've received a request to reset your password. if this was you, please used this code below</p>
             <span style="font-size:32;font-weight:bold; text-align:center;width:100%">${verificationCode}</span>
-            <p>If you didn't request this, ignore this email and your password would remain the secure</p>
+            <p>If you didn't request this, ignore this email and your password would remain secure</p>
             <p>Best regards,</p>
             <p>Zippa Wallet</p>
           </div>
