@@ -102,7 +102,7 @@ export default class AuthController {
     if (user) {
       if (!user.verified) {
         const verificationCode = Math.floor(1000 + Math.random() * 9000)
-        const user = await User.query().where('email', email).update({ verificationCode }).first()
+        await User.query().where('email', email).update({ verificationCode }).first()
 
         await mail.send((message) => {
           message.to(user.email).subject('Zippa Verification Code').html(`
