@@ -41,6 +41,14 @@ export const loginValidator = vine.compile(
   })
 )
 
+export const resetPasswordValidator = vine.compile(
+  vine.object({
+    email,
+    password,
+    confirmed: vine.string().confirmed({ confirmationField: 'password' }),
+  })
+)
+
 export const verifyValidator = vine.compile(
   vine.object({
     email,

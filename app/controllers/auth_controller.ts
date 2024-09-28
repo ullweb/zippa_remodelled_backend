@@ -8,6 +8,7 @@ import {
   emailValidator,
   loginValidator,
   registerValidator,
+  resetPasswordValidator,
   updatePinValidator,
   verifyValidator,
 } from '#validators/auth'
@@ -128,6 +129,136 @@ export default class AuthController {
     }
   }
 
+  async resetMail({ request, response }: HttpContext) {
+    logger.info('reset code resend route')
+
+    const { email } = await request.validateUsing(emailValidator)
+    const verificationCode = Math.floor(1000 + Math.random() * 9000)
+    const user = await User.query().where('email', email).first()
+    if (user) {
+      // console.log(user, email)
+      user.passwordResetCode = verificationCode
+      await user.save()
+      await mail
+        .send((message) => {
+          message.to(user.email).subject('Reset Your Zippa Wallet Password').html(`
+          <div>
+            <b>Dear ${user.name},</b>
+            <p>We've received a request to reset your password. if this was you, please used this code below</p>
+            <span style="font-size:32;font-weight:bold; text-align:center;width:100%">${verificationCode}</span>
+            <p>If you didn't request this, ignore this email and your password would remain the secure</p>
+            <p>Best regards,</p>
+            <p>Zippa Wallet</p>
+          </div>
+          `)
+        })
+        .catch((err) => {
+          logger.error({ err: err }, 'Something went wrong')
+          response.safeStatus(500)
+          return {
+            success: false,
+            message: err,
+          }
+        })
+    } else {
+      response.safeStatus(400)
+      return {
+        success: false,
+        message: 'User not found for ' + email,
+      }
+    }
+  }
+  async resendCode({ request, response }: HttpContext) {
+    logger.info('resend reset code resend route')
+
+    const { email } = await request.validateUsing(emailValidator)
+    const verificationCode = Math.floor(1000 + Math.random() * 9000)
+    const user = await User.query().where('email', email).first()
+    if (user) {
+      // console.log(user, email)
+      user.passwordResetCode = verificationCode
+      await user.save()
+      await mail
+        .send((message) => {
+          message.to(user.email).subject('Zippa Verification Code').html(`
+          <div>
+            <b>Dear ${user.name},</b>
+            <p>We've received a request to reset your password. if this was you, please used this code below</p>
+            <span style="font-size:32;font-weight:bold; text-align:center;width:100%">${verificationCode}</span>
+            <p>If you didn't request this, ignore this email and your password would remain the secure</p>
+            <p>Best regards,</p>
+            <p>Zippa Wallet</p>
+          </div>
+          `)
+        })
+        .catch((err) => {
+          logger.error({ err: err }, 'Something went wrong')
+          response.safeStatus(500)
+          return {
+            success: false,
+            message: err,
+          }
+        })
+    } else {
+      response.safeStatus(400)
+      return {
+        success: false,
+        message: 'User not found for ' + email,
+      }
+    }
+  }
+
+  async verifyCode({ request, response }: HttpContext) {
+    logger.info('verify reset password code route')
+
+    const { email, code } = await request.validateUsing(verifyValidator)
+    const user = await User.query().where('email', email).first()
+
+    if (user) {
+      const dbCode = user?.passwordResetCode
+      if (dbCode !== code) {
+        logger.error({ err: 'invalid code' }, 'Something went wrong')
+        response.safeStatus(400)
+        return {
+          success: false,
+          message: 'Invalid code',
+        }
+      }
+      user.passwordResetCode = null
+      await user.save()
+      return {
+        success: true,
+        message: 'Code successfully verified',
+      }
+    }
+    logger.error({ err: 'no user found' }, 'Something went wrong')
+    response.safeStatus(400)
+    return {
+      success: false,
+      message: 'User not found',
+    }
+  }
+
+  async passwordReset({ request, response }: HttpContext) {
+    logger.info('reset password code route')
+
+    const { email, password } = await request.validateUsing(resetPasswordValidator)
+    const user = await User.query().where('email', email).first()
+    if (user) {
+      user.password = password
+      await user.save()
+      return {
+        success: true,
+        message: 'Password reset successfully',
+      }
+    } else {
+      response.safeStatus(402)
+      return {
+        success: false,
+        message: 'user not registered',
+      }
+    }
+  }
   async resendVerificationCode({ request, response }: HttpContext) {
     logger.info('verification code resend route')
 
@@ -197,7 +328,7 @@ export default class AuthController {
       await mail.send((message) => {
         message.to(user.email).subject('Welcome to Zippa Wallet - Start Saving Today!').html(`
             <h4>Dear ${user.name},</h4>
-            <p>A warm welcome to Zippa Wallet, your go-to platform for convenient VTU purchases and smart money-saving solutions!</p>
+            <p>A warm welcome from Zippa Wallet, your go-to platform for convenient VTU purchases and smart money-saving solutions!</p>
             <p>We're excited to have you on board and help you achieve your financial goals. With our app, you can:</p>
             <ul>
               <li>Easily buy airtime, data, electricity and subscribe to cable for yourself or loved ones</li>

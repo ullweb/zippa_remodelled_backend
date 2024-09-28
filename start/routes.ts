@@ -14,7 +14,8 @@ import router from '@adonisjs/core/services/router'
 
 router.get('/', async () => {
   return {
-    hello: 'world',
+    success: true,
+    message: 'Zippa Wallet',
   }
 })
 router
@@ -27,12 +28,16 @@ router
     router
       .post('/auth/confirm-verification', [AuthController, 'confirmVerification'])
       .as('auth.confirm-code')
-    router.post('/auth/logout', [AuthController, 'logout'])
-    router.post('/auth/verify-bvn', [AuthController, 'verifyBVN'])
-    router.put('/auth/account', [AuthController, 'editAccount']).as('auth.edit.account')
-    router.post('/auth/create-pin', [AuthController, 'createPin']).as('auth.create.pin')
-    router.post('/auth/verify-pin', [AuthController, 'verifyPin']).as('auth.verify.pin')
-    router.post('/auth/update-pin', [AuthController, 'updatePin']).as('auth.update.pin')
+    router.post('/auth/logout', [AuthController, 'logout']).as('auth.logout')
+    router.post('/auth/verify-bvn', [AuthController, 'verifyBVN']).as('auth.verify-bvn')
+    router.put('/auth/account', [AuthController, 'editAccount']).as('auth.edit-account')
+    router.post('/auth/create-pin', [AuthController, 'createPin']).as('auth.create-pin')
+    router.post('/auth/verify-pin', [AuthController, 'verifyPin']).as('auth.verify-pin')
+    router.post('/auth/update-pin', [AuthController, 'updatePin']).as('auth.update-pin')
+    router.post('/auth/reset-mail', [AuthController, 'resetMail']).as('auth.reset-mail')
+    router.post('/auth/resend-code', [AuthController, 'resendCode']).as('auth.resend-code')
+    router.post('/auth/verify-code', [AuthController, 'verifyCode']).as('auth.verify-code')
+    router.post('/auth/reset-password', [AuthController, 'passwordReset']).as('auth.reset-password')
 
     router.get('/home', [HomeController, 'index']).as('home.index')
 
