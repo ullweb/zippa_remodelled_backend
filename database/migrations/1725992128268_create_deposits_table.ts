@@ -14,16 +14,16 @@ export default class extends BaseSchema {
         .references('id')
         .inTable('users')
         .onDelete('CASCADE')
-      table
-        .integer('wallet_id')
-        .notNullable()
-        .unsigned()
-        .references('id')
-        .inTable('wallets')
-        .onDelete('CASCADE')
+      // table
+      //   .integer('wallet_id')
+      //   .notNullable()
+      //   .unsigned()
+      //   .references('id')
+      //   .inTable('wallets')
+      //   .onDelete('CASCADE')
 
       table.integer('amount')
-      table.integer('refereneId')
+      table.string('reference_id')
       table.enum('status', ['success', 'pending', 'failed'])
 
       table.timestamp('created_at')

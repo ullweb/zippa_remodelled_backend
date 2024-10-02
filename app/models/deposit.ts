@@ -15,7 +15,7 @@ export default class Deposit extends BaseModel {
   declare userId: number
 
   @column()
-  declare referenceId: number
+  declare referenceId: string
 
   @column()
   declare amount: number

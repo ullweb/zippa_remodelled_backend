@@ -2,7 +2,7 @@ import vine from '@vinejs/vine'
 
 export const initiateValidator = vine.compile(
   vine.object({
-    ref: vine.number(),
+    ref: vine.string(),
     amount: vine.number(),
   })
 )
