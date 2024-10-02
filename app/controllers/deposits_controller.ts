@@ -115,4 +115,18 @@ export default class DepositsController {
         .json({ message: 'An error occurred while verifying the transaction' })
     }
   }
+  async getTransactions({ auth, response }: HttpContext) {
+    await auth.check()
+    const user = auth.user
+    if (!user) {
+      response.safeStatus(419)
+      return { success: false, message: 'user not authenticated' }
+    }
+    const transactions = await Transaction.query().orderBy('created_at', 'desc')
+
+    return {
+      success: true,
+      transactions,
+    }
+  }
 }
