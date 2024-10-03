@@ -17,19 +17,19 @@ import Bill from '#models/bill'
 import mail from '@adonisjs/mail/services/main'
 
 export default class BillsController {
-  private baseUrl = 'https://api-service.vtpass.com/api'
+  private readonly baseUrl = 'https://api-service.vtpass.com/api'
   // private baseUrl = 'https://vtpass.com/api'
   // private baseUrl = 'https://sandbox.vtpass.com/api'
 
-  private getHeader = {
+  private readonly getHeader = {
     'api-key': env.get('VTP_API_KEY'),
     'public-key': env.get('VTP_PUBLIC_KEY'),
   }
-  private postHeader = {
+  private readonly postHeader = {
     'api-key': env.get('VTP_API_KEY'),
     'secret-key': env.get('VTP_SECRET_KEY'),
   }
-  private generateRequestId = (): string => {
+  private readonly generateRequestId = (): string => {
     const datePart = moment().format('YYYYMMDDHHmm')
     const randomPart = generate(6)
     return datePart + randomPart
