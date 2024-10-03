@@ -87,20 +87,21 @@ export default class DepositsController {
           status: 'success',
         })
         if (saveCard) {
-          const cards = await Card.findManyBy({ user: userId })
+          const cards = await Card.findManyBy({ userId: userId })
           if (cards.length > 0) {
             for (let card of cards) {
               if (card?.authorization?.signature === data?.authorization?.signature) {
                 return { success: true, message: 'Wallet Topup Successful' }
               }
             }
+          } else {
+            await Card.create({
+              userId: userId,
+              email: data?.customer?.email,
+              authorization: data?.authorization,
+            })
+            return { success: true, message: 'Wallet Topup Successful' }
           }
-          await Card.create({
-            userId: userId,
-            email: data?.customer?.email,
-            authorization: data?.authorization,
-          })
-          return { success: true, message: 'Wallet Topup Successful' }
         }
       } else {
         await Deposit.query().where({ referenceId: reference }).delete()
