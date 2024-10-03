@@ -84,7 +84,6 @@ export default class BillsController {
           type: 'debit',
           status: 'failed',
         })
-        console.log(balance)
         response.safeStatus(400)
         return {
           success: false,
@@ -130,7 +129,7 @@ export default class BillsController {
         return {
           success: true,
           message: buy.response_description,
-          response: buy
+          response: buy,
         }
       } else {
         await Bill.create({
@@ -261,6 +260,7 @@ export default class BillsController {
         return {
           success: false,
           message: buy.response_description,
+          response: buy,
         }
       }
     } catch (error) {
@@ -339,7 +339,7 @@ export default class BillsController {
         })
         if (variation_code === 'prepaid') {
           await mail.send((message) => {
-            message.to(email).subject('Zippa Verification Code').html(`
+            message.to(email).subject('Zippa Electricity Token').html(`
                 <h1>Electricity Token!</h1>
                 <p>${buy.token}</p>
                 `)
