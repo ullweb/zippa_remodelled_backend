@@ -78,10 +78,10 @@ export default class DepositsController {
       // console.log('data =>', data, 'message =>', message, 'status =>', status)
       if (data && data.amount / 100 === trans?.amount && status) {
         await Deposit.query().where({ referenceId: reference }).update({ status: data.status })
-        await Wallet.query().where({ userId: userId }).increment({ walletBalance: data.amount })
+        await Wallet.query().where({ userId: userId }).increment({ walletBalance: trans?.amount })
         await Transaction.create({
           userId,
-          amount: data.amount,
+          amount: trans?.amount,
           title: 'Wallet Topup',
           type: 'credit',
           status: 'success',
