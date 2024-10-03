@@ -41,6 +41,6 @@ export default class Bill extends BaseModel {
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
 
-  @belongsTo(() => Wallet)
-  declare wallet: BelongsTo<typeof Wallet>
+  // @belongsTo(() => Wallet)
+  // declare wallet: BelongsTo<typeof Wallet>
 }

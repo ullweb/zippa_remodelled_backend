@@ -16,7 +16,7 @@ export default class extends BaseSchema {
       table.string('id_number', 50).nullable()
       table.string('id_type', 30).nullable()
       table.string('username', 200).notNullable().unique()
-      table.integer('balance').defaultTo(0)
+      // table.integer('balance').defaultTo(0)
       table.string('pin', 255).nullable()
       table.boolean('verified').defaultTo(false)
       table.integer('verification_code').nullable()

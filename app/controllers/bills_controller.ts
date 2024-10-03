@@ -130,6 +130,7 @@ export default class BillsController {
         return {
           success: true,
           message: buy.response_description,
+          response: buy
         }
       } else {
         await Bill.create({

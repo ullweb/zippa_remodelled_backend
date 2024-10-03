@@ -14,13 +14,13 @@ export default class extends BaseSchema {
         .references('id')
         .inTable('users')
         .onDelete('CASCADE')
-      table
-        .integer('wallet_id')
-        .notNullable()
-        .unsigned()
-        .references('id')
-        .inTable('wallets')
-        .onDelete('CASCADE')
+      // table
+      //   .integer('wallet_id')
+      //   .notNullable()
+      //   .unsigned()
+      //   .references('id')
+      //   .inTable('wallets')
+      //   .onDelete('CASCADE')
 
       table.string('type', 20)
       table.integer('amount')
