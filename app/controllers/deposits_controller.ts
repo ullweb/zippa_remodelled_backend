@@ -76,12 +76,8 @@ export default class DepositsController {
       const paystackResponse = await paystack.transaction.verify(`${reference}`)
       const { data, message, status } = paystackResponse
       if (data && data.amount === trans?.amount && status) {
-        await Deposit.query()
-          .where({ referenceId: reference })
-          .update({ status: data.status })
-          // const balance = await Wallet.query()
-          .where({ userId: userId })
-          .increment({ walletBalance: data.amount })
+        await Deposit.query().where({ referenceId: reference }).update({ status: data.status })
+        await Wallet.query().where({ userId: userId }).increment({ walletBalance: data.amount })
         await Transaction.create({
           userId,
           amount: data.amount,
