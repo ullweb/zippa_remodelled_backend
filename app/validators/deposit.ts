@@ -9,6 +9,6 @@ export const initiateValidator = vine.compile(
 
 export const verifyValidator = vine.compile(
   vine.object({
-    id: vine.number(),
+    id: vine.string(),
   })
 )

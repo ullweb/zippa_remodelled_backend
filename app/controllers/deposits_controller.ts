@@ -57,7 +57,7 @@ export default class DepositsController {
     return { success: true, message: 'Wallet Topup Initiated' }
   }
 
-  async verifyTopup({ auth, request, response }: HttpContext) {
+  async verifyTopup({ auth, params, request, response }: HttpContext) {
     await auth.check()
     const user = auth.user
     if (!user) {
@@ -66,7 +66,8 @@ export default class DepositsController {
     }
     const { id: userId } = user
     // const { id, name } = req.user;
-    const { id: reference } = await request.validateUsing(verifyValidator)
+    let reference = params.id
+    // const { id: reference } = await request.validateUsing(verifyValidator)
     const saveCard = request.input('saveCard')
     try {
       const trans = await Deposit.findBy({ referenceId: reference })
