@@ -18,6 +18,7 @@ import limiter from '@adonisjs/limiter/services/main'
 import axios from 'axios'
 import { StatusCodes } from 'http-status-codes'
 import hash from '@adonisjs/core/services/hash'
+import { format } from 'date-fns'
 
 export default class AuthController {
   async register({ request }: HttpContext) {
@@ -612,7 +613,8 @@ export default class AuthController {
     }
 
     const dob = new Date(user.dob)
-    const dobFormatted = `${dob.getDate()}-${dob.getMonth() + 1}-${dob.getFullYear()}`
+    const dobFormatted = format(dob, 'dd-MM-yyyy')
+    // const dobFormatted = `${dob.getDate()}-${dob.getMonth() + 1}-${dob.getFullYear()}`
 
     const options = {
       method: 'POST',
