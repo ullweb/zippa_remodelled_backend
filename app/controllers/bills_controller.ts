@@ -119,7 +119,7 @@ export default class BillsController {
       if (buy.code === '000') {
         await Bill.create({
           userId: id,
-          // username: name,
+          reference: request_id,
           type: 'Airtime',
           amount: amount,
           provider: network,
@@ -134,7 +134,7 @@ export default class BillsController {
       } else {
         await Bill.create({
           userId: id,
-          // username: name,
+          reference: request_id,
           type: 'Airtime',
           amount: amount,
           provider: network,
@@ -223,7 +223,7 @@ export default class BillsController {
       if (buy.code === '000') {
         await Bill.create({
           userId: id,
-          // username: name,
+          reference: request_id,
           type: 'Data',
           amount: amount,
           provider: serviceID,
@@ -239,7 +239,7 @@ export default class BillsController {
       } else {
         await Bill.create({
           userId: id,
-          // username: name,
+          reference: request_id,
           type: 'Data',
           amount: amount,
           provider: serviceID,
@@ -329,7 +329,7 @@ export default class BillsController {
       if (buy.code === '000') {
         await Bill.create({
           userId: id,
-          // username: name,
+          reference: request_id,
           type: 'Electricity',
           amount: amount,
           provider: serviceID,
@@ -360,7 +360,7 @@ export default class BillsController {
       } else {
         await Bill.create({
           userId: id,
-          // username: name,
+          reference: request_id,
           type: 'Electricity',
           amount: amount,
           provider: serviceID,
@@ -460,7 +460,7 @@ export default class BillsController {
       if (buy.code === '000') {
         await Bill.create({
           userId: id,
-          // username: name,
+          reference: request_id,
           type: 'Cable',
           amount: amount,
           provider: serviceID,
@@ -472,7 +472,7 @@ export default class BillsController {
       } else {
         await Bill.create({
           userId: id,
-          // username: name,
+          reference: request_id,
           type: 'Cable',
           amount: amount,
           provider: serviceID,
@@ -554,6 +554,40 @@ export default class BillsController {
     } catch (error) {
       response.safeStatus(500)
       return { success: false, message: 'An error occurred', error: error }
+    }
+  }
+
+  async requery({ params, response }: HttpContext) {
+    const id = params.id
+    try {
+      const fd = new FormData()
+      fd.append('request_id', id)
+      const variations: any = await got
+        .post(`${this.baseUrl}/requery`, {
+          headers: this.getHeader,
+          body: fd,
+        })
+        .json()
+
+      if (variations.response_description === '000') {
+        return {
+          success: true,
+          variations: variations?.content?.transactions,
+        }
+      } else {
+        console.log(variations)
+        response.safeStatus(400)
+        return {
+          success: false,
+          message: variations.content.errors,
+        }
+      }
+    } catch (error) {
+      response.safeStatus(500)
+      return {
+        success: false,
+        message: 'An error occurred',
+      }
     }
   }
 

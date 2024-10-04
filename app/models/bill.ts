@@ -11,7 +11,7 @@ export default class Bill extends BaseModel {
   declare userId: number
 
   @column()
-  declare walletId: number
+  declare reference: string
 
   @column()
   declare type: string

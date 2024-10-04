@@ -580,7 +580,7 @@ export default class AuthController {
 
     return { success: true, message: 'success' }
   }
-  verifyBVN = async ({ auth, request, response }: HttpContext) => {
+  async verifyBVN({ auth, request, response }: HttpContext) {
     await auth.check()
     const user = auth.user
     if (!user) {
@@ -591,20 +591,24 @@ export default class AuthController {
     const { bvn } = await request.validateUsing(bvnValidator)
 
     // const user = await User.findOne({ email })
-    try {
-      if (!user.dob) {
-        throw new Error('Please complete your profile, provide your date of birth')
+    let message = ''
+    let error = false
+    if (!user.dob) {
+      message = 'Please complete your profile, provide your date of birth'
+      error = true
+    } else if (!user.name.split(' ')[0] || !user.name.split(' ')[1]) {
+      message = 'Please provide your first and last name on profile'
+      error = true
+    } else if (user.bvnVerified) {
+      message = 'BVN already verified'
+      error = true
+    }
+    if (error) {
+      response.safeStatus(StatusCodes.INTERNAL_SERVER_ERROR)
+      return {
+        success: false,
+        message,
       }
-      if (!user.name.split(' ')[0] || !user.name.split(' ')[1]) {
-        throw new Error('Please provide your first and last name on profile')
-      }
-      if (user.bvnVerified) {
-        throw new Error('BVN already verified')
-      }
-    } catch (error) {
-      response
-        .safeStatus(StatusCodes.INTERNAL_SERVER_ERROR)
-        .json({ success: false, message: error })
     }
 
     const dob = new Date(user.dob)
