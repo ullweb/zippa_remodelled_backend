@@ -327,11 +327,16 @@ export default class AuthController {
       }
       user.verified = true
       await user.save()
-      const wallet = await Wallet.create({
-        walletBalance: 0,
-        userId: user.id,
-        walletNumber: user.phone.slice(1, 11),
-      })
+      const wallet = await Wallet.updateOrCreate(
+        {
+          userId: user.id,
+        },
+        {
+          walletBalance: 0,
+          userId: user.id,
+          walletNumber: user.phone.slice(1, 11),
+        }
+      )
 
       const token = await User.accessTokens.create(user, ['*'], {
         expiresIn: '7 days',
@@ -651,17 +656,17 @@ export default class AuthController {
               detailsMessage = ': ' + invalidDetails.join(', ').replace(/valid/gi, '')
             }
           }
-          response.safeStatus(StatusCodes.BAD_REQUEST).json({
+          response.safeStatus(StatusCodes.BAD_REQUEST)
+          return {
             success: false,
             message: `BVN not verified, incorrect details${detailsMessage} `,
-          })
+          }
         }
       })
       .catch(function (error) {
         console.log(error.response.data)
-        response
-          .safeStatus(StatusCodes.INTERNAL_SERVER_ERROR)
-          .json({ success: false, message: error?.response?.data?.description })
+        response.safeStatus(StatusCodes.INTERNAL_SERVER_ERROR)
+        return { success: false, message: error?.response?.data?.description }
       })
   }
 }
