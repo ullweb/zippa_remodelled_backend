@@ -102,6 +102,9 @@ export default class AuthController {
     }
     // const user = await User.verifyCredentials(email, password)
     if (user) {
+      const token = await User.accessTokens.create(user, ['*'], {
+        expiresIn: '7 days',
+      })
       if (!user.verified) {
         const verificationCode = Math.floor(1000 + Math.random() * 9000)
         await User.query().where('email', email).update({ verificationCode }).first()
@@ -116,11 +119,10 @@ export default class AuthController {
         return {
           success: false,
           message: 'User not verified, verification code sent to email',
+          user,
+          token: token.toJSON().token,
         }
       }
-      const token = await User.accessTokens.create(user, ['*'], {
-        expiresIn: '7 days',
-      })
 
       return {
         success: true,
@@ -310,7 +312,7 @@ export default class AuthController {
   }
 
   async confirmVerification({ request, response }: HttpContext) {
-    logger.info('verification code resend route')
+    logger.info('verification code confirm route')
 
     const { email, code } = await request.validateUsing(verifyValidator)
     const user = await User.query().where('email', email).first()
