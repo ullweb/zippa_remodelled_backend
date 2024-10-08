@@ -1,4 +1,4 @@
-import User from '#models/user'
+// import User from '#models/user'
 import Wallet from '#models/wallet'
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
 
