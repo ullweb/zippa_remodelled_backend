@@ -115,9 +115,9 @@ export default class AuthController {
           <span style="font-size:32;font-weight:bold; text-align:center;width:100%">${verificationCode}</span>
             `)
         })
-        response.safeStatus(304)
         return {
           success: false,
+          code: 304,
           message: 'User not verified, verification code sent to email',
           user,
           token: token.toJSON().token,
