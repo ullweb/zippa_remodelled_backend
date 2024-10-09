@@ -147,9 +147,9 @@ export default class AuthController {
           message.to(user.email).subject('Reset Your Zippa Wallet Password').html(`
           <div>
             <b>Dear ${user.name},</b>
-            <p>We've received a request to reset your password. if this was you, please used this code below</p>
+            <p>We've received a application to reset your password. if this was you, please used this code below</p>
             <span style="font-size:32;font-weight:bold; text-align:center;width:100%">${verificationCode}</span>
-            <p>If you didn't request this, ignore this email and your password would remain secure</p>
+            <p>If you didn't apply for this, ignore this email and your password would remain secure</p>
             <p>Best regards,</p>
             <p>Zippa Wallet</p>
           </div>

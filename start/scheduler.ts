@@ -1,8 +1,10 @@
-
 import scheduler from 'adonisjs-scheduler/services/main'
 
-scheduler.command("inspire").everyFiveSeconds();
+// scheduler.command('inspire').everyFiveSeconds()
 
-scheduler.call(() => {
-    console.log("Pruge DB!");
-}).weekly();
+scheduler.command('target', ['1']).everyFiveSeconds()
+scheduler
+  .call(() => {
+    console.log('Purge DB!')
+  })
+  .weekly()

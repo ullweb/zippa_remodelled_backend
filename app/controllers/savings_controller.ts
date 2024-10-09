@@ -3,30 +3,18 @@ import { getSavingsTotal } from '#services/saving_service'
 import type { HttpContext } from '@adonisjs/core/http'
 import logger from '@adonisjs/core/services/logger'
 
-export default class HomeController {
+export default class SavingsController {
   async index({ auth, response }: HttpContext) {
-    logger.info('home route')
+    logger.info('savings route')
     await auth.check()
-    const checkUser = auth.user
+    const checkUser: User | undefined = auth.user
     if (!checkUser) {
       response.safeStatus(419)
       return { success: false, message: 'user not authenticated' }
     }
     const { id } = checkUser
-    // transactions
-    const user = await User.query()
-      .preload('wallet')
-      .preload('transactions')
-      .where('id', id)
-      .first()
+    const total = getSavingsTotal(id)
 
-    const savings = getSavingsTotal(id)
-    return {
-      success: true,
-      id,
-      transactions: user?.transactions,
-      wallet: user?.wallet,
-      savings,
-    }
+    return { success: true, total }
   }
 }

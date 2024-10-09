@@ -11,6 +11,8 @@ const AuthController = () => import('#controllers/auth_controller')
 const BillsController = () => import('#controllers/bills_controller')
 const HomeController = () => import('#controllers/home_controller')
 const DepositsController = () => import('#controllers/deposits_controller')
+const AutosavesController = () => import('#controllers/autosaves_controller')
+const SavingsController = () => import('#controllers/savings_controller')
 import router from '@adonisjs/core/services/router'
 
 router.get('/', async () => {
@@ -58,5 +60,10 @@ router
     // router.post('/wallet/verify-mobile/:id', [DepositsController, 'verifyTopupMobile'])
     // router.get('/wallet/cards', [DepositsController, 'getCards'])
     router.get('/wallet/transactions', [DepositsController, 'getTransactions'])
+
+    router.get('/savings', [SavingsController, 'index'])
+
+    router.get('/savings/target', [AutosavesController, 'index'])
+    router.post('savings/target/autosaves', [AutosavesController, 'createAutoSave'])
   })
   .prefix('api')
