@@ -62,6 +62,6 @@ export default class Target extends BaseCommand {
     }
 
     // console.log(wallet)
-    this.logger.info('Hello world from "Target"')
+    // this.logger.info('Hello world from "Target"')
   }
 }
