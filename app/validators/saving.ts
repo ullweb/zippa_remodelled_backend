@@ -7,9 +7,9 @@ export const autosaveValidator = vine.compile(
     endDate: vine.string(),
     frequency: vine.string(),
     per: vine.number(),
-    timeOfDay: vine.string(),
-    dayOfWeek: vine.number(),
-    dayOfMonth: vine.number(),
+    timeOfDay: vine.string().optional().requiredWhen('frequency', '=', 'daily'),
+    dayOfWeek: vine.number().optional().requiredWhen('frequency', '=', 'weekly'),
+    dayOfMonth: vine.number().optional().requiredWhen('frequency', '=', 'monthly'),
     startDate: vine.string(),
   })
 )

@@ -54,9 +54,9 @@ export const calculateInitialStartTime = (
 
 export const getCronExpression = (
   frequency: string,
-  timeOfDay: string,
-  dayOfWeek: number,
-  dayOfMonth: number
+  timeOfDay: string = '7:00',
+  dayOfWeek: number = 0,
+  dayOfMonth: number = 1
 ) => {
   let cronTime = '0 7' // Default to 7:00 AM
 
@@ -71,9 +71,9 @@ export const getCronExpression = (
     case 'daily':
       return `${cronTime} * * *` // Daily at specified time
     case 'weekly':
-      return `${cronTime} * * ${dayOfWeek || 0}` // Weekly on specified day and time
+      return `${cronTime} * * ${dayOfWeek}` // Weekly on specified day and time
     case 'monthly':
-      return `${cronTime} ${dayOfMonth || 1} * *` // Monthly on specified day and time
+      return `${cronTime} ${dayOfMonth} * *` // Monthly on specified day and time
     default:
       return 'Invalid frequency'
     // throw new BadRequestError();
