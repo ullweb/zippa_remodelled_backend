@@ -16,7 +16,9 @@ export default class AutosavesController {
     }
     const { id } = checkUser
 
-    const autoSaves = await Autosave.findManyBy({ userId: id })
+    const autoSaves = await Autosave.findManyBy({ userId: id, status: 'ongoing' })
+
+    const completed = await Autosave.findManyBy({ userId: id, status: 'completed' })
     let total = 0
     autoSaves.forEach((autoSave) => {
       total += autoSave.current
@@ -25,7 +27,8 @@ export default class AutosavesController {
     return {
       success: true,
       total,
-      autoSaves,
+      ongoing: autoSaves,
+      completed,
     }
   }
   async getAutosaves({ auth, params, response }: HttpContext) {

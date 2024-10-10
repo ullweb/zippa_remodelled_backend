@@ -83,16 +83,18 @@ export const getCronExpression = (
 export const getSavingsTotal = async (id: number) => {
   // const thriftSaves = await ThriftSave.find({ user: id })
   //   const flexSave = await FlexSave.findOne({ user: id })
-  const autoSaves = await Autosave.findManyBy({ userId: id })
+  const autoSaves = await Autosave.findManyBy({ userId: id, status: 'ongoing' })
   // const fixedLocks = await FixedLock.find({ user: id })
   // const benefitsSaves = await Benefit.find({ user: id })
   // const kidsSaves = await Kiddies.find({ user: id })
 
   let total = 0
+  let target = 0
   // thriftSaves.forEach((thriftSave) => {
   //   total += thriftSave.amount
   // })
   autoSaves.forEach((autoSave) => {
+    target += autoSave.current
     total += autoSave.current
   })
   // fixedLocks.forEach((fixedLock) => {
@@ -106,5 +108,5 @@ export const getSavingsTotal = async (id: number) => {
   // })
   // total += flexSave?.amount
 
-  return total
+  return { total, target }
 }

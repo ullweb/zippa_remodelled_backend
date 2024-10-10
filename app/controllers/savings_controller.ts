@@ -13,8 +13,8 @@ export default class SavingsController {
       return { success: false, message: 'user not authenticated' }
     }
     const { id } = checkUser
-    const total = getSavingsTotal(id)
+    const { total, target } = await getSavingsTotal(id)
 
-    return { success: true, total }
+    return { success: true, total, target }
   }
 }
