@@ -4,6 +4,7 @@ import { autosaveValidator } from '#validators/saving'
 import type { HttpContext } from '@adonisjs/core/http'
 import logger from '@adonisjs/core/services/logger'
 import mail from '@adonisjs/mail/services/main'
+import { format } from 'date-fns'
 
 export default class AutosavesController {
   async index({ auth, response }: HttpContext) {
@@ -106,13 +107,14 @@ export default class AutosavesController {
       frequency,
       per,
       interest,
+      status: 'ongoing',
       userId: id,
       cron: cronExpression,
     })
     await mail.send((message) => {
       message.to(email).subject('Zippa AutoSave Successful').html(`
           <h1>Your ${title} AutoSave has been successfully subscribed</h1>
-          ${per} will be deducted from your account ${frequency} starting from ${startDate} to ${endDate}
+          ${per} will be deducted from your account ${frequency} starting from ${format(startDate, 'EEEE, MMMM do, yyyy')} to ${format(endDate, 'EEEE, MMMM do, yyyy')}
           <br/>
           <h2>Amount: ₦${amount}</h2>
           <h2>Interest: 18%</h2>

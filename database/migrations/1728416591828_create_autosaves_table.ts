@@ -14,6 +14,7 @@ export default class extends BaseSchema {
         .references('id')
         .inTable('users')
         .onDelete('CASCADE')
+
       table.string('title', 200)
       table.integer('amount')
       table.integer('current')
