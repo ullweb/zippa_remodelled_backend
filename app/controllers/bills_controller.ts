@@ -234,7 +234,7 @@ export default class BillsController {
         return {
           success: true,
           message: buy.response_description,
-          data: buy.content.transactions,
+          data: buy,
         }
       } else {
         await Bill.create({
@@ -348,13 +348,13 @@ export default class BillsController {
             success: true,
             message: buy.response_description,
             token: buy.token,
-            details: buy.content.transactions,
+            response: buy,
           }
         } else {
           return {
             success: true,
             message: buy.response_description,
-            details: buy.content.transactions,
+            response: buy,
           }
         }
       } else {
@@ -468,7 +468,7 @@ export default class BillsController {
           recipient: billersCode,
           status: 'success',
         })
-        return { success: true, message: buy.response_description, data: buy.content }
+        return { success: true, message: buy.response_description, response: buy }
       } else {
         await Bill.create({
           userId: id,
