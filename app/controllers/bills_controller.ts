@@ -48,7 +48,7 @@ export default class BillsController {
         type: 'debit',
         status: 'success',
       })
-      .orderBy('created_at', 'desc')
+      .orderBy('created_at', 'asc')
       .limit(5)
 
     return {
@@ -234,7 +234,7 @@ export default class BillsController {
         return {
           success: true,
           message: buy.response_description,
-          data: buy,
+          response: buy,
         }
       } else {
         await Bill.create({

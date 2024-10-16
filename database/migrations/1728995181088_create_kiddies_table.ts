@@ -1,7 +1,7 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
 
 export default class extends BaseSchema {
-  protected tableName = 'autosaves'
+  protected tableName = 'kiddies'
 
   async up() {
     this.schema.createTable(this.tableName, (table) => {
@@ -14,17 +14,14 @@ export default class extends BaseSchema {
         .references('id')
         .inTable('users')
         .onDelete('CASCADE')
-
-      table.string('title', 200)
+      table.enum('plan', ['Smart 100', 'Smart 50', 'Smart 30', 'Smart 20'])
       table.integer('amount')
       table.integer('current')
-      table.date('start_date')
-      table.date('end_date')
-      table.string('frequency')
+      table.string('start_date', 50)
+      table.string('end_date', 50)
+      table.string('benefits')
+      table.boolean('registered')
       table.string('cron', 50)
-      table.integer('per')
-      table.integer('interest')
-      table.enum('status', ['ongoing', 'completed'])
 
       table.timestamp('created_at')
       table.timestamp('updated_at')
