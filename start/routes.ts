@@ -13,6 +13,8 @@ const HomeController = () => import('#controllers/home_controller')
 const DepositsController = () => import('#controllers/deposits_controller')
 const AutosavesController = () => import('#controllers/autosaves_controller')
 const SavingsController = () => import('#controllers/savings_controller')
+const FlexesController = () => import('#controllers/flexes_controller')
+const LocksController = () => import('#controllers/locks_controller')
 import router from '@adonisjs/core/services/router'
 
 router.get('/', async () => {
@@ -64,6 +66,37 @@ router
     router.get('/savings', [SavingsController, 'index'])
 
     router.get('/savings/target', [AutosavesController, 'index'])
-    router.post('savings/target/autosaves', [AutosavesController, 'createAutoSave'])
+    router.post('/savings/target/autosaves', [AutosavesController, 'createAutoSave'])
+
+    router.post('/savings/target/flex', [FlexesController, 'topupFlex'])
+    router.patch('/savings/target/flex/withdraw', [FlexesController, 'withdrawFlex'])
+    router.get('/flex/transactions', [FlexesController, 'getFlexTransactions'])
+
+    //     router.get("/savings/flex", [, 'getFlexTotal']);
+    // router.get("/savings/flex/transactions", [, 'getFlexTrans'])
+    // router.patch("/savings/flex", [, 'topupFlex']);
+    // router.get("/savings/flex/withdraw-date", [, 'getWithdrawDate']);
+    // router.patch("/savings/flex/withdraw", [, 'withdrawFlex']);
+
+    router.post('/savings/fixed', [LocksController, 'createFixedLock'])
+    router.get('/savings/fixed', [LocksController, 'getFixedLocks'])
+    router.get('/savings/fixed/total', [LocksController, 'getFixedLockTotal'])
+    router.get('/savings/fixed/:id', [LocksController, 'getFixedLock'])
+
+    router.post('/savings/benefit', [LocksController, 'createBenefit'])
+    router.get('/savings/benefit', [LocksController, 'getBenefits'])
+    router.get('/savings/benefit/total', [LocksController, 'getBenefitTotal'])
+    router.get('/savings/benefit/:id', [LocksController, 'getBenefit'])
+
+    router.post('/savings/kiddies', [LocksController, 'createKiddies'])
+    router.get('/savings/kiddies', [LocksController, 'getKiddiesAll'])
+    router.get('/savings/kiddies/total', [LocksController, 'getKiddiesTotal'])
+    router.get('/savings/kiddies/:id', [LocksController, 'getKiddies'])
+
+    router.post('/savings/thrift', [LocksController, 'createThriftSave'])
+    router.get('/savings/thrift', [LocksController, 'getThriftSaves'])
+    router.get('/savings/thrift/total', [LocksController, 'getThriftTotal'])
+    router.patch('/savings/thrift/withdraw/:id', [LocksController, 'withdrawThrift'])
+    router.get('/savings/thrift/:id', [LocksController, 'getThriftSave'])
   })
   .prefix('api')

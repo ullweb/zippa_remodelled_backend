@@ -100,6 +100,7 @@ export default class LocksController {
       endDate: endDateObj,
       interest,
       userId: id,
+      paidBack: 0,
     })
 
     // const scheduleDate = endDateObj.toISOString()
@@ -128,6 +129,49 @@ export default class LocksController {
     }
   }
 
+  async getFixedLocks({ auth, response }: HttpContext) {
+    logger.info('get fixed locks route')
+    await auth.check()
+    const checkUser = auth.user
+    if (!checkUser) {
+      response.safeStatus(419)
+      return { success: false, message: 'user not authenticated' }
+    }
+    const { id } = checkUser
+    const fixedLocks = await FixedLock.query().where({ userId: id }).orderBy('created_at', 'desc')
+    return { success: true, fixedLocks }
+  }
+
+  async getFixedLock({ auth, params, response }: HttpContext) {
+    logger.info('get fixed lock route')
+    await auth.check()
+    const checkUser = auth.user
+    if (!checkUser) {
+      response.safeStatus(419)
+      return { success: false, message: 'user not authenticated' }
+    }
+    const { id } = params
+    const fixedLock = await FixedLock.find(id)
+    return { success: true, fixedLock }
+  }
+
+  async getFixedLockTotal({ auth, response }: HttpContext) {
+    logger.info('get fixed lock total route')
+    await auth.check()
+    const checkUser = auth.user
+    if (!checkUser) {
+      response.safeStatus(419)
+      return { success: false, message: 'user not authenticated' }
+    }
+    const { id } = checkUser
+    const fixedLocks = await FixedLock.findManyBy({ userId: id })
+    let total = 0
+    fixedLocks.forEach((fixedLock) => {
+      total += fixedLock.amount
+    })
+    return { success: true, total }
+  }
+
   async createBenefit({ auth, request, response }: HttpContext) {
     logger.info('create benefit route')
     await auth.check()
@@ -140,6 +184,7 @@ export default class LocksController {
     const { plan, startDate, dayOfMonth } = await request.validateUsing(benefitValidator)
 
     const startDateObj = new Date(startDate)
+    console.log(startDateObj)
     const endDateObj = this.calculateEndDate(startDateObj)
 
     const { benefits, amount } = this.benefits[plan as 'Diamond' | 'Gold' | 'Silver' | 'Bronze']
@@ -217,8 +262,9 @@ export default class LocksController {
       message: 'Benefit created successfully',
     }
   }
-  async getThriftSaves({ auth, response }: HttpContext) {
-    logger.info('create benefit route')
+
+  async getBenefits({ auth, response }: HttpContext) {
+    logger.info('get benefits route')
     await auth.check()
     const checkUser = auth.user
     if (!checkUser) {
@@ -226,7 +272,50 @@ export default class LocksController {
       return { success: false, message: 'user not authenticated' }
     }
     const { id } = checkUser
-    const thrifts = await ThriftSave.query().where({ userId: id }).orderBy('created_at', 'asc')
+    const benefits = await Benefit.query().where({ userId: id }).orderBy('created_at', 'desc')
+    return { success: true, benefits }
+  }
+
+  async getBenefit({ auth, response, params }: HttpContext) {
+    logger.info('get single benefit route')
+    await auth.check()
+    const checkUser = auth.user
+    if (!checkUser) {
+      response.safeStatus(419)
+      return { success: false, message: 'user not authenticated' }
+    }
+    const { id } = params
+    const benefit = await Benefit.find(id)
+    return { success: true, benefit }
+  }
+
+  async getBenefitTotal({ auth, response }: HttpContext) {
+    logger.info('get benefit total route')
+    await auth.check()
+    const checkUser = auth.user
+    if (!checkUser) {
+      response.safeStatus(419)
+      return { success: false, message: 'user not authenticated' }
+    }
+    const { id } = checkUser
+    const benefits = await Benefit.findManyBy({ userId: id })
+    let total = 0
+    benefits.forEach((benefit) => {
+      total += benefit.current
+    })
+    return { success: true, total }
+  }
+
+  async getThriftSaves({ auth, response }: HttpContext) {
+    logger.info('get thrift saves route')
+    await auth.check()
+    const checkUser = auth.user
+    if (!checkUser) {
+      response.safeStatus(419)
+      return { success: false, message: 'user not authenticated' }
+    }
+    const { id } = checkUser
+    const thrifts = await ThriftSave.query().where({ userId: id }).orderBy('created_at', 'desc')
     return {
       success: true,
       thrifts,
@@ -298,7 +387,7 @@ export default class LocksController {
     // const endDateObj = new Date()
 
     await Wallet.query()
-      .where({ user: id })
+      .where({ userId: id })
       .increment('wallet_balance', balance.amount + interest)
     await Transaction.create({
       userId: id,
@@ -360,7 +449,7 @@ export default class LocksController {
         message: 'Insufficient funds for registration',
       }
     } else {
-      await Wallet.query().where({ user: id }).decrement('wallet_balance', reg)
+      await Wallet.query().where({ userId: id }).decrement('wallet_balance', reg)
       await Transaction.create({
         userId: id,
         amount: amount,
@@ -518,7 +607,9 @@ export default class LocksController {
       thrift,
     }
   }
-  calculateEndDate(date: Date, year: number = 1): string {
-    return format(add(date, { years: year }), 'dd/MM/yyyy')
+  private calculateEndDate(date: any, year: number = 1): string {
+    console.log(date)
+    const added = add(date, { years: year })
+    return format(added, 'dd/MM/yyyy')
   }
 }
