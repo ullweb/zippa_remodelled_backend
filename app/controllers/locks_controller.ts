@@ -234,7 +234,7 @@ export default class LocksController {
       await Wallet.query().where({ userId: id }).decrement('wallet_balance', reg)
       await Transaction.create({
         userId: id,
-        amount: amount,
+        amount: reg,
         title: `Benefit - ${plan} registration fee`,
         type: 'debit',
         status: 'success',
@@ -575,7 +575,7 @@ export default class LocksController {
       await Wallet.query().where({ userId: id }).decrement('wallet_balance', reg)
       await Transaction.create({
         userId: id,
-        amount: amount,
+        amount: reg,
         title: `Kiddies - ${plan} registration fee`,
         type: 'debit',
         status: 'success',

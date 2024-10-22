@@ -1,3 +1,4 @@
+import Transaction from '#models/transaction'
 import User from '#models/user'
 import { getSavingsTotal } from '#services/saving_service'
 import type { HttpContext } from '@adonisjs/core/http'
@@ -14,17 +15,17 @@ export default class HomeController {
     }
     const { id } = checkUser
     // transactions
-    const user = await User.query()
-      .preload('wallet')
-      .preload('transactions')
-      .where('id', id)
-      .first()
+    const user = await User.query().preload('wallet').where('id', id).first()
 
     const savings = getSavingsTotal(id)
+    const transactions = await Transaction.query()
+      .where({ userId: id })
+      .limit(10)
+      .orderBy('created_at', 'desc')
     return {
       success: true,
       id,
-      transactions: user?.transactions,
+      transactions,
       wallet: user?.wallet,
       savings,
     }

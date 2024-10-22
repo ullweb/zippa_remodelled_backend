@@ -1,4 +1,9 @@
 import Autosave from '#models/autosave'
+import Benefit from '#models/benefit'
+import FixedLock from '#models/fixed_lock'
+import FlexSave from '#models/flex_save'
+import Kiddy from '#models/kiddy'
+import ThriftSave from '#models/thrift_save'
 import cronParser from 'cron-parser'
 export const matchCronExpression = (cronExpression: string) => {
   try {
@@ -90,32 +95,32 @@ export const getCronExpression = (
 }
 
 export const getSavingsTotal = async (id: number) => {
-  // const thriftSaves = await ThriftSave.find({ user: id })
-  //   const flexSave = await FlexSave.findOne({ user: id })
+  const thriftSaves = await ThriftSave.findManyBy({ userId: id, status: 'ongoing' })
+  const flexSave = await FlexSave.find({ userId: id })
   const autoSaves = await Autosave.findManyBy({ userId: id, status: 'ongoing' })
-  // const fixedLocks = await FixedLock.find({ user: id })
-  // const benefitsSaves = await Benefit.find({ user: id })
-  // const kidsSaves = await Kiddies.find({ user: id })
+  const fixedLocks = await FixedLock.findManyBy({ userId: id, status: 'ongoing' })
+  const benefitsSaves = await Benefit.findManyBy({ userId: id, status: 'ongoing' })
+  const kidsSaves = await Kiddy.findManyBy({ userId: id, status: 'ongoing' })
 
   let total = 0
   let target = 0
-  // thriftSaves.forEach((thriftSave) => {
-  //   total += thriftSave.amount
-  // })
+  thriftSaves.forEach((thriftSave) => {
+    total += thriftSave.amount
+  })
   autoSaves.forEach((autoSave) => {
     target += autoSave.current
     total += autoSave.current
   })
-  // fixedLocks.forEach((fixedLock) => {
-  //   total += fixedLock.amount
-  // })
-  // benefitsSaves.forEach((benefit) => {
-  //   total += benefit.current
-  // })
-  // kidsSaves.forEach((kid) => {
-  //   total += kid.current
-  // })
-  // total += flexSave?.amount
+  fixedLocks.forEach((fixedLock) => {
+    total += fixedLock.amount
+  })
+  benefitsSaves.forEach((benefit) => {
+    total += benefit.current
+  })
+  kidsSaves.forEach((kid) => {
+    total += kid.current
+  })
+  total += flexSave?.amount ?? 0
 
   return { total, target }
 }
