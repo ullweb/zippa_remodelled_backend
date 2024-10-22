@@ -27,6 +27,9 @@ export default class Kiddy extends BaseModel {
   declare benefits: string
 
   @column()
+  declare status: 'completed' | 'ongoing'
+
+  @column()
   declare registered: boolean
 
   @column()

@@ -23,6 +23,7 @@ export default class extends BaseSchema {
       table.string('benefits')
       table.boolean('registered')
       table.string('cron', 50)
+      table.enum('status', ['ongoing', 'completed'])
 
       table.timestamp('created_at')
       table.timestamp('updated_at')

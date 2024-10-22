@@ -27,6 +27,9 @@ export default class Benefit extends BaseModel {
   declare benefits: string
 
   @column()
+  declare status: 'completed' | 'ongoing'
+
+  @column()
   declare registered: boolean
 
   @column()

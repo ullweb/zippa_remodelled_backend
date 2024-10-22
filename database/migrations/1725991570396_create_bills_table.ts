@@ -27,6 +27,7 @@ export default class extends BaseSchema {
       table.string('provider', 50)
       table.string('package', 100)
       table.string('recipient', 100)
+      table.string('reference', 100)
       table.enum('status', ['success', 'pending', 'failed'])
 
       table.timestamp('created_at')

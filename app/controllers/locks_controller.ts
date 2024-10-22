@@ -129,6 +129,29 @@ export default class LocksController {
     }
   }
 
+  async lockHome({ auth, response }: HttpContext) {
+    logger.info('get fixed locks home route')
+    await auth.check()
+    const checkUser = auth.user
+    if (!checkUser) {
+      response.safeStatus(419)
+      return { success: false, message: 'user not authenticated' }
+    }
+    const { id } = checkUser
+    const ongoing = await FixedLock.query()
+      .where({ userId: id, status: 'ongoing' })
+      .orderBy('created_at', 'desc')
+    const completed = await FixedLock.query()
+      .where({ userId: id, status: 'completed' })
+      .orderBy('created_at', 'desc')
+    const fixedLocks = await FixedLock.findManyBy({ userId: id, status: 'ongoing' })
+    let total = 0
+    fixedLocks.forEach((fixedLock) => {
+      total += fixedLock.amount
+    })
+    return { success: true, ongoing, completed, total }
+  }
+
   async getFixedLocks({ auth, response }: HttpContext) {
     logger.info('get fixed locks route')
     await auth.check()
@@ -263,6 +286,29 @@ export default class LocksController {
     }
   }
 
+  async benefitsHome({ auth, response }: HttpContext) {
+    logger.info('get benefits home route')
+    await auth.check()
+    const checkUser = auth.user
+    if (!checkUser) {
+      response.safeStatus(419)
+      return { success: false, message: 'user not authenticated' }
+    }
+    const { id } = checkUser
+    const ongoing = await Benefit.query()
+      .where({ userId: id, status: 'ongoing' })
+      .orderBy('created_at', 'desc')
+    const completed = await Benefit.query()
+      .where({ userId: id, status: 'completed' })
+      .orderBy('created_at', 'desc')
+    const benefits = await Benefit.findManyBy({ userId: id, status: 'ongoing' })
+    let total = 0
+    benefits.forEach((benefit) => {
+      total += benefit.current
+    })
+    return { success: true, ongoing, completed, total }
+  }
+
   async getBenefits({ auth, response }: HttpContext) {
     logger.info('get benefits route')
     await auth.check()
@@ -304,6 +350,82 @@ export default class LocksController {
       total += benefit.current
     })
     return { success: true, total }
+  }
+  async createThriftSave({ auth, request, response }: HttpContext) {
+    logger.info('create thrift save route')
+    await auth.check()
+    const checkUser = auth.user
+    if (!checkUser) {
+      response.safeStatus(419)
+      return { success: false, message: 'user not authenticated' }
+    }
+    const { id } = checkUser
+    const { title, frequency, per, startDate, timeOfDay, dayOfWeek, dayOfMonth } =
+      await request.validateUsing(thriftSaveValidator)
+
+    // const startDateObj = new Date(startDate)
+
+    // const initialStartTime = calculateInitialStartTime(
+    //   startDate,
+    //   frequency,
+    //   timeOfDay,
+    //   dayOfWeek,
+    //   dayOfMonth
+    // )
+    const cron = getCronExpression(frequency, timeOfDay, dayOfWeek, dayOfMonth)
+
+    const interest = 0
+
+    const thrift = await ThriftSave.create({
+      title,
+      amount: 0,
+      frequency,
+      startDate: startDate,
+      per,
+      interest,
+      userId: id,
+      cron,
+    })
+
+    // const job = agenda.create('recurringThrift job wallet', {
+    //   thriftId: thrift._id,
+    //   userId: id,
+    //   email,
+    //   name,
+    //   cronExpression,
+    // })
+    // await agenda.start()
+    // job.schedule(initialStartTime)
+    // await job.save()
+
+    // await sendThriftEmail({ email, title, per, frequency })
+    return {
+      success: true,
+      thrift,
+    }
+  }
+
+  async thriftsHome({ auth, response }: HttpContext) {
+    logger.info('get thrifts home route')
+    await auth.check()
+    const checkUser = auth.user
+    if (!checkUser) {
+      response.safeStatus(419)
+      return { success: false, message: 'user not authenticated' }
+    }
+    const { id } = checkUser
+    const ongoing = await ThriftSave.query()
+      .where({ userId: id, status: 'ongoing' })
+      .orderBy('created_at', 'desc')
+    const completed = await ThriftSave.query()
+      .where({ userId: id, status: 'completed' })
+      .orderBy('created_at', 'desc')
+    const thrifts = await ThriftSave.findManyBy({ userId: id, status: 'ongoing' })
+    let total = 0
+    thrifts.forEach((thrift) => {
+      total += thrift.amount
+    })
+    return { success: true, ongoing, completed, total }
   }
 
   async getThriftSaves({ auth, response }: HttpContext) {
@@ -503,6 +625,29 @@ export default class LocksController {
       message: 'Kiddies created successfully',
     }
   }
+
+  async kiddiesHome({ auth, response }: HttpContext) {
+    logger.info('get kiddies home route')
+    await auth.check()
+    const checkUser = auth.user
+    if (!checkUser) {
+      response.safeStatus(419)
+      return { success: false, message: 'user not authenticated' }
+    }
+    const { id } = checkUser
+    const ongoing = await Kiddy.query()
+      .where({ userId: id, status: 'ongoing' })
+      .orderBy('created_at', 'desc')
+    const completed = await Kiddy.query()
+      .where({ userId: id, status: 'completed' })
+      .orderBy('created_at', 'desc')
+    const kiddies = await Kiddy.findManyBy({ userId: id, status: 'ongoing' })
+    let total = 0
+    kiddies.forEach((kiddy) => {
+      total += kiddy.current
+    })
+    return { success: true, ongoing, completed, total }
+  }
   async getKiddiesAll({ auth, response }: HttpContext) {
     logger.info('get all kiddies route')
     await auth.check()
@@ -552,59 +697,6 @@ export default class LocksController {
     return {
       success: true,
       total,
-    }
-  }
-  async createThriftSave({ auth, request, response }: HttpContext) {
-    logger.info('create thrift save route')
-    await auth.check()
-    const checkUser = auth.user
-    if (!checkUser) {
-      response.safeStatus(419)
-      return { success: false, message: 'user not authenticated' }
-    }
-    const { id } = checkUser
-    const { title, frequency, per, startDate, timeOfDay, dayOfWeek, dayOfMonth } =
-      await request.validateUsing(thriftSaveValidator)
-
-    // const startDateObj = new Date(startDate)
-
-    // const initialStartTime = calculateInitialStartTime(
-    //   startDate,
-    //   frequency,
-    //   timeOfDay,
-    //   dayOfWeek,
-    //   dayOfMonth
-    // )
-    const cron = getCronExpression(frequency, timeOfDay, dayOfWeek, dayOfMonth)
-
-    const interest = 0
-
-    const thrift = await ThriftSave.create({
-      title,
-      amount: 0,
-      frequency,
-      startDate: startDate,
-      per,
-      interest,
-      userId: id,
-      cron,
-    })
-
-    // const job = agenda.create('recurringThrift job wallet', {
-    //   thriftId: thrift._id,
-    //   userId: id,
-    //   email,
-    //   name,
-    //   cronExpression,
-    // })
-    // await agenda.start()
-    // job.schedule(initialStartTime)
-    // await job.save()
-
-    // await sendThriftEmail({ email, title, per, frequency })
-    return {
-      success: true,
-      thrift,
     }
   }
   private calculateEndDate(date: any, year: number = 1): string {
