@@ -79,22 +79,22 @@ router
     // router.patch("/savings/flex/withdraw", [, 'withdrawFlex']);
 
     router.post('/savings/fixed', [LocksController, 'createFixedLock'])
-    router.get('/savings/fixed', [LocksController, 'getFixedLocks'])
+    router.get('/savings/fixed', [LocksController, 'lockHome'])
     router.get('/savings/fixed/total', [LocksController, 'getFixedLockTotal'])
     router.get('/savings/fixed/:id', [LocksController, 'getFixedLock'])
 
     router.post('/savings/benefit', [LocksController, 'createBenefit'])
-    router.get('/savings/benefit', [LocksController, 'getBenefits'])
+    router.get('/savings/benefit', [LocksController, 'benefitsHome'])
     router.get('/savings/benefit/total', [LocksController, 'getBenefitTotal'])
     router.get('/savings/benefit/:id', [LocksController, 'getBenefit'])
 
     router.post('/savings/kiddies', [LocksController, 'createKiddies'])
-    router.get('/savings/kiddies', [LocksController, 'getKiddiesAll'])
+    router.get('/savings/kiddies', [LocksController, 'kiddiesHome'])
     router.get('/savings/kiddies/total', [LocksController, 'getKiddiesTotal'])
     router.get('/savings/kiddies/:id', [LocksController, 'getKiddies'])
 
     router.post('/savings/thrift', [LocksController, 'createThriftSave'])
-    router.get('/savings/thrift', [LocksController, 'getThriftSaves'])
+    router.get('/savings/thrift', [LocksController, 'thriftsHome'])
     router.get('/savings/thrift/total', [LocksController, 'getThriftTotal'])
     router.patch('/savings/thrift/withdraw/:id', [LocksController, 'withdrawThrift'])
     router.get('/savings/thrift/:id', [LocksController, 'getThriftSave'])
