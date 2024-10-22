@@ -101,6 +101,7 @@ export default class LocksController {
       interest,
       userId: id,
       paidBack: 0,
+      status: 'ongoing',
     })
 
     // const scheduleDate = endDateObj.toISOString()
