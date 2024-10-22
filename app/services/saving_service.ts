@@ -96,7 +96,7 @@ export const getCronExpression = (
 
 export const getSavingsTotal = async (id: number) => {
   const thriftSaves = await ThriftSave.findManyBy({ userId: id, status: 'ongoing' })
-  const flexSave = await FlexSave.find({ userId: id })
+  const flexSave = await FlexSave.findBy({ userId: id })
   const autoSaves = await Autosave.findManyBy({ userId: id, status: 'ongoing' })
   const fixedLocks = await FixedLock.findManyBy({ userId: id, status: 'ongoing' })
   const benefitsSaves = await Benefit.findManyBy({ userId: id, status: 'ongoing' })
