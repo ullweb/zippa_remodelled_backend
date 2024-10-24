@@ -78,9 +78,15 @@ export default class FlexesController {
       type: 'debit',
       status: 'success',
     })
+
     // await sendFlexTopupEmail({ email, amount })
 
-    return { success: true, transactions, message: 'Flex Wallet Topup Successful' }
+    return {
+      success: true,
+      transactions,
+      total: balance.amount,
+      message: 'Flex Wallet Topup Successful',
+    }
   }
 
   async withdrawFlex({ auth, request, response }: HttpContext) {
@@ -102,7 +108,9 @@ export default class FlexesController {
         message: 'Flex account not found',
       }
     }
+    logger.info(flexSave)
     if (flexSave.amount < amount) {
+      logger.info(flexSave)
       response.safeStatus(400)
       return {
         success: false,
@@ -157,8 +165,18 @@ export default class FlexesController {
       status: 'success',
     })
 
+    const balance = await FlexSave.findBy({ userId: id })
+    const transactions = await FlexTransaction.query()
+      .where({ userId: id })
+      .orderBy('created_at', 'desc')
+
     // await sendWithdrawFlexEmail({ email, amount });
-    return { success: true, message: 'Withdrawal Successful' }
+    return {
+      success: true,
+      transactions,
+      total: balance?.amount ?? 0,
+      message: 'Withdrawal Successful',
+    }
   }
 
   async flexTotal({ auth, response }: HttpContext) {
@@ -184,9 +202,10 @@ export default class FlexesController {
       return { success: false, message: 'user not authenticated' }
     }
     const { id } = checkUser
+    const balance = await FlexSave.findBy({ userId: id })
     const transactions = await FlexTransaction.query()
       .where({ userId: id })
-      .orderBy('created_at', 'asc')
-    return { success: true, transactions }
+      .orderBy('created_at', 'desc')
+    return { success: true, transactions, total: balance?.amount ?? 0 }
   }
 }
