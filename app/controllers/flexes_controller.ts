@@ -108,9 +108,9 @@ export default class FlexesController {
         message: 'Flex account not found',
       }
     }
-    logger.info(flexSave)
+
     if (flexSave.amount < amount) {
-      logger.info(flexSave)
+      logger.info('Insufficient funds')
       response.safeStatus(400)
       return {
         success: false,
