@@ -104,8 +104,14 @@ export const getSavingsTotal = async (id: number) => {
 
   let total = 0
   let target = 0
+  let thrift = 0
+  let fixed = 0
+  let benefits = 0
+  let kids = 0
+
   thriftSaves.forEach((thriftSave) => {
     total += thriftSave.amount
+    thrift += thriftSave.amount
   })
   autoSaves.forEach((autoSave) => {
     target += autoSave.current
@@ -113,14 +119,17 @@ export const getSavingsTotal = async (id: number) => {
   })
   fixedLocks.forEach((fixedLock) => {
     total += fixedLock.amount
+    fixed += fixedLock.amount
   })
   benefitsSaves.forEach((benefit) => {
     total += benefit.current
+    benefits += benefit.current
   })
   kidsSaves.forEach((kid) => {
     total += kid.current
+    kids += kid.current
   })
   total += flexSave?.amount ?? 0
 
-  return { total, target }
+  return { total, target, kids, benefits, fixed, thrift, flexSave: flexSave?.amount ?? 0 }
 }

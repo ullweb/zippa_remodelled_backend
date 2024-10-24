@@ -17,7 +17,7 @@ export default class HomeController {
     // transactions
     const user = await User.query().preload('wallet').where('id', id).first()
 
-    const savings = getSavingsTotal(id)
+    const savings = await getSavingsTotal(id)
     const transactions = await Transaction.query()
       .where({ userId: id })
       .limit(10)
