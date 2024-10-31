@@ -27,7 +27,10 @@ export default class Kiddy extends BaseModel {
   declare benefits: string
 
   @column()
-  declare status: 'completed' | 'ongoing'
+  declare status: 'completed' | 'ongoing' | 'failed'
+
+  @column()
+  declare debitAttemptCount: number
 
   @column()
   declare registered: boolean

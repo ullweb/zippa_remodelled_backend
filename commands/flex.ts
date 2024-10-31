@@ -7,7 +7,7 @@ export default class Flex extends BaseCommand {
   static commandName = 'flex'
   static description = ''
 
-  static options: CommandOptions = {}
+  static readonly options: CommandOptions = {}
   @args.string()
   declare userId: string
 

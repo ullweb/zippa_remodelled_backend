@@ -12,10 +12,10 @@ const dbConfig = defineConfig({
         user: env.get('DB_USER'),
         password: env.get('DB_PASSWORD'),
         database: env.get('DB_DATABASE'),
-        ssl: {
-          rejectUnauthorized: env.get('DB_REJECT_UNAUTHORIZED'),
-          ca: env.get('DB_SSL_CERT'),
-        },
+        // ssl: {
+        //   rejectUnauthorized: env.get('DB_REJECT_UNAUTHORIZED'),
+        //   ca: env.get('DB_SSL_CERT'),
+        // },
       },
       migrations: {
         naturalSort: true,

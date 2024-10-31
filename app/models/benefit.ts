@@ -27,7 +27,10 @@ export default class Benefit extends BaseModel {
   declare benefits: string
 
   @column()
-  declare status: 'completed' | 'ongoing'
+  declare debitAttemptCount: number
+
+  @column()
+  declare status: 'completed' | 'ongoing' | 'failed'
 
   @column()
   declare registered: boolean

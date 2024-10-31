@@ -2,6 +2,7 @@ import Autosave from '#models/autosave'
 import Transaction from '#models/transaction'
 import User from '#models/user'
 import Wallet from '#models/wallet'
+import { sendMail } from '#services/sendmail_service'
 import { args, BaseCommand } from '@adonisjs/core/ace'
 import type { CommandOptions } from '@adonisjs/core/types/ace'
 
@@ -49,6 +50,24 @@ export default class Target extends BaseCommand {
             type: 'debit',
             status: 'failed',
           })
+          await sendMail(
+            {
+              subject: 'Failed Debit',
+              message: `
+                <body>
+                <h1>Hello there, </h1>
+                <p>Unfortunately, we were unable to debit your wallet for the ${auto.title} AutoSave of ₦${auto.per}.</p>
+                <p>Please ensure you have enough funds in your account and try again.</p>
+                <p>If you have any questions, please contact us at <a href="mailto:support@zippawallet.com">zippawallet.com</a></p>
+                <p>Thank you.</p>
+                <br />
+                <br />
+                <p>Best regards,</p>
+                </body>
+              `,
+            },
+            user
+          )
           // await sendFailedWalletDebitEmail({
           //   email,
           //   title: `${auto.title} AutoSave`,

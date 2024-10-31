@@ -15,6 +15,7 @@ const AutosavesController = () => import('#controllers/autosaves_controller')
 const SavingsController = () => import('#controllers/savings_controller')
 const FlexesController = () => import('#controllers/flexes_controller')
 const LocksController = () => import('#controllers/locks_controller')
+const CronsController = () => import('#controllers/crons_controller')
 import router from '@adonisjs/core/services/router'
 
 router.get('/', async () => {
@@ -98,5 +99,10 @@ router
     router.get('/savings/thrift/total', [LocksController, 'getThriftTotal'])
     router.patch('/savings/thrift/withdraw/:id', [LocksController, 'withdrawThrift'])
     router.get('/savings/thrift/:id', [LocksController, 'getThriftSave'])
+
+    //cron jobs
+    router.get('/cron-job/hourly/TSFYu', [CronsController, 'runDailyCron'])
+    router.get('/cron-job/daily/TSFYu', [CronsController, 'runBenefitCron'])
+    router.get('/cron-job/monthly/TSFYu', [CronsController, 'runMonthlyFlex'])
   })
   .prefix('api')

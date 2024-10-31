@@ -5,6 +5,7 @@ import ThriftSave from '#models/thrift_save'
 import Transaction from '#models/transaction'
 import Wallet from '#models/wallet'
 import { getCronExpression } from '#services/saving_service'
+import { sendMail } from '#services/sendmail_service'
 import { benefitValidator, fixedLockValidator, thriftSaveValidator } from '#validators/flex_save'
 import type { HttpContext } from '@adonisjs/core/http'
 import logger from '@adonisjs/core/services/logger'
@@ -117,6 +118,20 @@ export default class LocksController {
     // job.schedule(scheduleDate)
     // await job.save()
 
+    sendMail(
+      {
+        subject: 'Zippa Fixed Lock Successful',
+        message: `
+        <h2>${title} - Fixed Lock</h2>
+        <p>You have successfully locked ₦${amount} until ${endDateObj} </p>
+        <p>You will earn ₦${interest} interest on your savings credited to your account on ${endDateObj} </p>
+        <br />
+        <br />
+        <h3>Thank you for choosing Zippa</h3>
+        `,
+      },
+      checkUser
+    )
     // await sendFixedLockEmail({
     //   email,
     //   title,
@@ -278,6 +293,21 @@ export default class LocksController {
     // payJob.schedule(endDateObj)
     // await payJob.save()
 
+    sendMail(
+      {
+        subject: 'Zippa Kiddies Successful',
+        message: `
+        <h2>${plan} - Benefit Plan</h2>
+        <p>You have successfully subscribed to the Zippa wallet ${plan} Benefit plan ending 1 year from now(${endDateObj}) </p>
+        <p>Ensure not to default on your monthly contributions to enjoy the benefits of this plan</p>
+        <p>Benefits include: ${benefits}</p>
+        <br />
+        <br />
+        <h3>Thank you for choosing Zippa</h3>
+        `,
+      },
+      checkUser
+    )
     // await sendBenefitEmail({ email, title: plan, endDate: endDateObj, benefits })
 
     return {
@@ -618,6 +648,21 @@ export default class LocksController {
     // payJob.schedule(endDateObj)
     // await payJob.save()
 
+    sendMail(
+      {
+        subject: 'Zippa Kiddies Successful',
+        message: `
+          <h2>${plan} - Kiddies Plan</h2>
+          <p>You have successfully subscribed to the Zippa wallet ${plan} Kiddies plan ending 1 year from now(${endDateObj}) </p>
+          <p>Ensure not to default on your monthly contributions to enjoy the benefits of this plan</p>
+          <p>Benefits include: ${benefits}</p>
+          <br />
+          <br />
+          <h3>Thank you for choosing Zippa</h3>
+          `,
+      },
+      checkUser
+    )
     // await sendKiddiesEmail({ email, title: plan, endDate: endDateObj, benefits })
 
     return {
