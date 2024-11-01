@@ -85,7 +85,7 @@ export default class CronsController {
   public async runMonthlyFlex() {
     const flexes = await FlexSave.findManyBy({ status: 'ongoing' })
     flexes.forEach(async (flex) => {
-      await flex.userId
+      await scheduleFlex(flex.userId)
     })
     return {
       success: true,
